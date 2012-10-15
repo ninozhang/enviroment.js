@@ -1,107 +1,75 @@
-var touch = new Touch(),
-    events;
+(function() {
 
-function onDragging(event) {
-    var $target = $(event.currentTarget),
-        transform = getTransform($target),
-        regExp = /(.*)(px)(,)(.*)(px)/ig,
-        result = regExp.exec(transform.translate),
-        top = result && result[4] ? Number(result[4]) : 0,
-        left = result && result[1] ? Number(result[1]) : 0;
-    transform.translate = (left + event.deltaX) + 'px,' + (top + event.deltaY) + 'px';
-    setTransform($target, transform);
-}
-
-function onDrag(event) {
-    var $target = $(event.currentTarget),
-        offset = $target.offset();
-}
-
-function onHold(event) {
-    var $target = $(event.currentTarget);
-    $target.addClass('holding');
-}
-
-function onPinching(event) {
-    var $target = $(event.currentTarget),
-        transform = getTransform($target),
-        scale = event.scale,
-        originScale = $target.data('scale') || 1;
-    transform.scale = originScale * scale;console.log(transform.scale);
-    setTransform($target, transform);
-}
-
-function onPinch(event) {
-    var $target = $(event.currentTarget),
-        transform = getTransform($target),
-        scale = transform.scale;
-    $target.data('scale', scale);
-}
-
-function onRotating(event) {
-    var $target = $(event.currentTarget),
-        transform = getTransform($target),
-        delta = event.delta,
-        angle = extractDegree(transform.rotate);
-    transform.rotate = (angle + delta) + 'deg';
-    setTransform($target, transform);
-}
-
-function onRotate(event) {
-    var $target = $(event.currentTarget),
-        transform = getTransform($target),
-        rotate = transform.rotate;
-    $target.data('rotate', rotate);
-}
-
-function extractDegree(rotate) {
-    if (rotate.indexOf('deg')) {
-        return Number(rotate.replace('deg', ''));
-    }
-    return 0;
-}
-
-function getTransform(target) {
-    var $target = $(target),
-        transformString = $target.css('-webkit-transform'),
-        transformArray = transformString.split(')'),
-        transform = {
-            translate: '0,0',
-            scale: 1,
-            rotate: 0
+    var ua = navigator.userAgent.toLowerCase(),
+        os = {
+            version: ''
         },
-        result, prop, value;
-    if (transformString === 'none') {
-        return transform;
-    }
-    for (var i = 0; i < transformArray.length; i++) {
-        result = transformArray[i].split('(');
-        prop = result[0].trim();
-        value = result[1];
-        if (prop) {
-            transform[prop] = value;
-        }
-    }
-    return transform;
-}
+        device = {
+            name: ''
+        },
+        browser = {};
 
-function setTransform(target, transform) {
-    var $target = $(target),
-        transformString = '';
-    for (var name in transform) {
-        transformString += name + '(' + transform[name] + ')';
-    }
-    $target.css('-webkit-transform', transformString);
-    return transformString;
-}
+    var webkit = ua.match(/WebKit\/([\d.]+)/),
+        webos = ua.match(/(webOS|hpwOS)[\s\/]([\d.]+)/),
+        touchpad = webos && ua.match(/TouchPad/),
+        kindle = ua.match(/Kindle\/([\d.]+)/),
+        silk = ua.match(/Silk\/([\d._]+)/),
+        blackberry = ua.match(/(BlackBerry).*Version\/([\d.]+)/),
+        uc = ua.match(/UC/);
 
-events = {
-    'dragging .photo': onDragging,
-    'drag .photo': onDrag,
-    'hold .photo': onHold,
-    'pinching .photo': onPinching,
-    'pinch .photo': onPinch,
-    'rotating .photo': onRotating,
-    'rotate .photo': onRotate
-};
-touch.on(events);
+
+    // 内核
+    if (ua.match(/webkit\//)) {
+        browser.webkit = true;
+    } else if (ua.match(/gecko\//)) {
+        browser.gecko = true;
+    } else if (ua.match(/opera\//)) {
+        browser.opera = true;
+    } else if (ua.match(/\smsie\s/)) {
+        browser.ie = true;
+    }
+
+    // 系统和设备
+    if (ua.match(/(android)\s+([\d.]+)/)) {
+        os.android = true;
+        device.android = true;
+    } else if (ua.match(/(ipad).*os\s([\d_]+)/)) {
+        os.ios = true;
+        device.ipad = true;
+    } else if (ua.match(/(ipod).*os\s([\d_]+)/)) {
+        os.ios = true;
+        device.ipod = true;
+    } else if (ua.match(/(iphone\sos)\s([\d_]+)/)) {
+        os.ios = true;
+        device.iphone = true;
+    }
+
+    if (uc.match(/juc\s(/) || uc.match(/ucweb/)) {
+        browser.uc = true;
+    }
+
+    if () {
+        
+    }
+
+    if (browser.webkit = !!webkit) browser.version = webkit[1];
+    if (android) os.android = true, os.version = android[2];
+    if (iphone) os.ios = os.iphone = true, os.version = iphone[2].replace(/_/g, '.');
+    if (ipad) os.ios = os.ipad = true, os.version = ipad[2].replace(/_/g, '.');
+    if (webos) os.webos = true, os.version = webos[2];
+    if (touchpad) os.touchpad = true;
+    if (blackberry) os.blackberry = true, os.version = blackberry[2];
+    if (kindle) os.kindle = true, os.version = kindle[1];
+    if (silk) browser.silk = true, browser.version = silk[1];
+    if (!silk && os.android && ua.match(/Kindle Fire/)) browser.silk = true;
+    if (!android && !ipad && !iphone && !webos &&
+        !touchpad && !kindle && !silk && !blackberry && !uc)
+        browser.desktop = true;
+
+    window.enviroment = window.env = {
+        ua: ua,
+        os: os,
+        device: device,
+        browser: browser
+    }
+})();
