@@ -1,23 +1,22 @@
 (function() {
 
     var ua = navigator.userAgent.toLowerCase(),
-        os = {
-            version: ''
-        },
-        device = {
-            name: ''
-        },
-        browser = {};
+        os = {},
+        device = {},
+        browser = {},
+        r;
 
-    var webkit = ua.match(/WebKit\/([\d.]+)/),
-        webos = ua.match(/(webOS|hpwOS)[\s\/]([\d.]+)/),
-        touchpad = webos && ua.match(/TouchPad/),
-        kindle = ua.match(/Kindle\/([\d.]+)/),
-        silk = ua.match(/Silk\/([\d._]+)/),
-        blackberry = ua.match(/(BlackBerry).*Version\/([\d.]+)/),
-        uc = ua.match(/UC/);
-
-
+    function extractName(source) {
+        if (source.name) {
+            return source.name;
+        }
+        for (var key in source) {
+            if (source[key] === true) {
+                return key;
+            }
+        }
+    }
+    
     // 内核
     if (ua.match(/webkit\//)) {
         browser.webkit = true;
@@ -30,46 +29,76 @@
     }
 
     // 系统和设备
-    if (ua.match(/(android)\s+([\d.]+)/)) {
+    if (r = ua.match(/(windows)\s(.*);/)) {
+        os.windows = true;
+        os.version = r[2];
+        device.pc = true;
+    } else if (r = ua.match(/(android)\s+([\d.]+)/)) {
         os.android = true;
+        os.version = r[2];
         device.android = true;
-    } else if (ua.match(/(ipad).*os\s([\d_]+)/)) {
+    } else if (r = (ua.match(/(ipad).*os\s([\d_]+)/) ||
+        ua.match(/(ipod).*os\s([\d_]+)/) ||
+        ua.match(/(iphone)\sos\s([\d_]+)/))) {
         os.ios = true;
-        device.ipad = true;
-    } else if (ua.match(/(ipod).*os\s([\d_]+)/)) {
-        os.ios = true;
-        device.ipod = true;
-    } else if (ua.match(/(iphone\sos)\s([\d_]+)/)) {
-        os.ios = true;
-        device.iphone = true;
+        os.version = r[2];
+        device.ipad = r[1] === 'ipad';
+        device.ipod = r[1] === 'ipod';
+        device.iphone = r[1] === 'iphone';
+    } else if (ua.match(/(webos|hpwos)[\s\/]([\d.]+)/)) {
+        os.webos = true;
+        os.version = r[3];
+    } else if (ua.match(/playbook/)) {
+        os.blackberry = true;
+        device.playbook = true;
+    } else if (r = ua.match(/(blackberry).*version\/([\d.]+)/)) {
+        os.blackberry = true;
+        os.version = r[2];
+    } else if (ua.match(/meego/)) {
+        os.meego = true;
+    }
+    os.name = extractName(os);
+
+    // 发行版本
+    if (r = ua.match(/build\/miui/)) {
+        os.distribution = 'miui';
     }
 
-    if (uc.match(/juc\s(/) || uc.match(/ucweb/)) {
+    // 设备
+    if (ua.match(/touchpad/)) {
+        device.touchpad = true;
+    } else if (ua.match(/kindle\/([\d.]+)/)) {
+        device.kindle = true;
+    }
+    device.name = extractName(device);
+
+    // UC
+    if (ua.match(/juc\s\(/)) {
+        browser.uc = true;
+        browser.middleware = true;
+    } else if(r = ua.match(/ucweb([\d.]+)\/(\d+)\/(\d+)/)) {
+        browser.uc = true;
+        browser.middleware = true;
+        browser.version = r[1];
+        browser.pf = r[2];
+    } else if (ua.match(/\suc\s/)) {
         browser.uc = true;
     }
+    browser.name = extractName(browser);
 
-    if () {
-        
-    }
-
-    if (browser.webkit = !!webkit) browser.version = webkit[1];
-    if (android) os.android = true, os.version = android[2];
-    if (iphone) os.ios = os.iphone = true, os.version = iphone[2].replace(/_/g, '.');
-    if (ipad) os.ios = os.ipad = true, os.version = ipad[2].replace(/_/g, '.');
-    if (webos) os.webos = true, os.version = webos[2];
-    if (touchpad) os.touchpad = true;
-    if (blackberry) os.blackberry = true, os.version = blackberry[2];
-    if (kindle) os.kindle = true, os.version = kindle[1];
-    if (silk) browser.silk = true, browser.version = silk[1];
-    if (!silk && os.android && ua.match(/Kindle Fire/)) browser.silk = true;
-    if (!android && !ipad && !iphone && !webos &&
-        !touchpad && !kindle && !silk && !blackberry && !uc)
+    // 移动 or 桌面
+    if (os.android && !os.ios && !os.webos && !os.blackberry && !os.meego) {
+        os.mobile = true;
+        browser.mobile = true;
+    } else {
+        os.desktop = true;
         browser.desktop = true;
+    }
 
     window.enviroment = window.env = {
         ua: ua,
         os: os,
         device: device,
         browser: browser
-    }
+    };
 })();

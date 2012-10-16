@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>enviroment.js</title>
+<link rel="stylesheet" type="text/css" href="enviroment.css">
+<script src="lib/zepto.js"></script>
+<script src="lib/lang.js"></script>
+<script src="enviroment.js"></script>
+</head>
+<body>
+<div id="ua"></div>
+<hr>
+<div id="os"></div>
+<hr>
+<div id="device"></div>
+<hr>
+<div id="browser"></div>
+<script>
+var os = env.os,
+    browser = env.browser,
+    device = env.device,
+    osText = 'os: ' + os.name,
+    browserText = 'browser: ' + browser.name,
+    deviceText = 'device: ' + device.name;
+
+if (os.version) {
+    osText += '<br>version: ' + os.version;
+}
+if (os.distribution) {
+    osText += '<br>distribution: ' + os.distribution;
+}
+if (os.mobile) {
+    osText += '<br>platform: mobile';
+} else if (os.desktop) {
+    osText += '<br>platform: desktop';
+}
+
+if (browser.version) {
+    browserText += '<br>version: ' + browser.version;
+}
+if (browser.middleware) {
+    browserText += '<br>middleware: true';
+}
+
+$('#ua').html(env.ua);
+$('#os').html(osText);
+$('#device').html(deviceText);
+$('#browser').html(browserText);
+</script>
+</body>
+</html>
