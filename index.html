@@ -5,48 +5,46 @@
 <meta charset=utf-8>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>enviroment.js</title>
+<link rel="stylesheet" href="lib/qunit/qunit.css">
 <link rel="stylesheet" type="text/css" href="envi.css">
+</head>
+<body>
+<div>
+    <div id="ua"></div>
+    <hr>
+    <div id="os"></div>
+    <hr>
+    <div id="device"></div>
+    <hr>
+    <div id="browser"></div>
+</div>
+<div id="qunit"></div>
 <script src="lib/zepto.js"></script>
 <script src="lib/lang.js"></script>
+<script src="lib/qunit/qunit.js"></script>
 <script src="envi.js"></script>
 <script src="envi.os.js"></script>
+<script src="envi.os.dist.js"></script>
 <script src="envi.device.js"></script>
 <script src="envi.browser.js"></script>
 <script src="envi.browser.uc.js"></script>
-</head>
-<body>
-<div id="ua"></div>
-<hr>
-<div id="os"></div>
-<hr>
-<div id="device"></div>
-<hr>
-<div id="browser"></div>
+<script src="test/test.js"></script>
 <script>
 var os = envi.os,
     browser = envi.browser,
     device = envi.device,
-    osText = 'os: ' + os.name,
-    browserText = 'browser: ' + browser.name,
-    deviceText = 'device: ' + device.name;
+    osText = 'os: ',
+    browserText = 'browser: ',
+    deviceText = 'device: ';
 
-if (os.version) {
-    osText += '<br>version: ' + os.version;
+for (var key in os) {
+    osText += '<br>' + key + ': ' + os[key];
 }
-if (os.distribution) {
-    osText += '<br>distribution: ' + os.distribution;
+for (var key in browser) {
+    browserText += '<br>' + key + ': ' + browser[key];
 }
-if (os.mobile) {
-    osText += '<br>platform: mobile';
-} else if (os.desktop) {
-    osText += '<br>platform: desktop';
-}
-
-if (browser.version) {
-    browserText += '<br>version: ' + browser.version;
-}
-if (browser.middleware) {
-    browserText += '<br>middleware: true';
+for (var key in device) {
+    deviceText += '<br>' + key + ': ' + device[key];
 }
 
 $('#ua').html(envi.ua);
