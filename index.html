@@ -5,10 +5,14 @@
 <meta charset=utf-8>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>enviroment.js</title>
-<link rel="stylesheet" type="text/css" href="enviroment.css">
+<link rel="stylesheet" type="text/css" href="envi.css">
 <script src="lib/zepto.js"></script>
 <script src="lib/lang.js"></script>
-<script src="enviroment.js"></script>
+<script src="envi.js"></script>
+<script src="envi.os.js"></script>
+<script src="envi.device.js"></script>
+<script src="envi.browser.js"></script>
+<script src="envi.browser.uc.js"></script>
 </head>
 <body>
 <div id="ua"></div>
@@ -19,9 +23,9 @@
 <hr>
 <div id="browser"></div>
 <script>
-var os = env.os,
-    browser = env.browser,
-    device = env.device,
+var os = envi.os,
+    browser = envi.browser,
+    device = envi.device,
     osText = 'os: ' + os.name,
     browserText = 'browser: ' + browser.name,
     deviceText = 'device: ' + device.name;
@@ -45,7 +49,7 @@ if (browser.middleware) {
     browserText += '<br>middleware: true';
 }
 
-$('#ua').html(env.ua);
+$('#ua').html(envi.ua);
 $('#os').html(osText);
 $('#device').html(deviceText);
 $('#browser').html(browserText);
